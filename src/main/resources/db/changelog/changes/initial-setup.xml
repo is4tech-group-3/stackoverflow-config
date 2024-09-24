@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="table_tag" author="lester">
+        <createTable tableName="tag">
+            <column name="tag_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true" constraintName="pk_tag"/>
+            </column>
+            <column name="name" type="VARCHAR(15)"/>
+            <column name="description" type="VARCHAR(20)"/>
+            <column name="status" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_question_tag" author="lester">
+        <createTable tableName="question_tag">
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="question_tag" columnNames="tag_id, question_id" constraintName="pk_question_tag"/>
+    </changeSet>
+    <changeSet id="table_publication_tag" author="lester">
+        <createTable tableName="publication_tag">
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="publication_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="publication_tag" columnNames="tag_id, publication_id" constraintName="pk_publication_tag"/>
+    </changeSet>
+    <changeSet id="fk_question_publication_tags" author="lester">
+        <addForeignKeyConstraint baseTableName="question_tag" baseColumnNames="question_id"
+                                 referencedTableName="question" referencedColumnNames="question_id"
+                                 constraintName="fk_question_tag_question"/>
+        <addForeignKeyConstraint baseTableName="question_tag" baseColumnNames="tag_id"
+                                 referencedTableName="tag" referencedColumnNames="tag_id"
+                                 constraintName="fk_question_tag_tag"/>
+        <addForeignKeyConstraint baseTableName="publication_tag" baseColumnNames="publication_id"
+                                 referencedTableName="publication" referencedColumnNames="publication_id"
+                                 constraintName="fk_publication_tag_publication"/>
+        <addForeignKeyConstraint baseTableName="publication_tag" baseColumnNames="tag_id"
+                                 referencedTableName="tag" referencedColumnNames="tag_id"
+                                 constraintName="fk_publication_tag_tag"/>
+    </changeSet>
+</databaseChangeLog>
