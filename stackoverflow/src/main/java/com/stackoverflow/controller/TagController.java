@@ -29,26 +29,26 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tag> getTag(@PathVariable Long id) {
-        Tag tag = tagService.getTag(id);
+    public ResponseEntity<Tag> findTagById(@PathVariable("id") Long idTag) {
+        Tag tag = tagService.findTagById(idTag);
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tag> updateTag(@PathVariable Long id, @RequestBody TagRequest tagRequest) {
-        Tag tag = tagService.updateTag(id, tagRequest);
+    public ResponseEntity<Tag> updateTag(@PathVariable("id") Long idTag, @RequestBody TagRequest tagRequest) {
+        Tag tag = tagService.updateTag(idTag, tagRequest);
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable Long id) {
-        tagService.deleteTag(id);
+    public ResponseEntity<String> deleteTag(@PathVariable("id") Long idTag) {
+        tagService.deleteTag(idTag);
         return new ResponseEntity<>("Tag deleted successfully", HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Tag> changeStatusTag(@PathVariable Long id) {
-        Tag tag = tagService.changeStatus(id);
+    public ResponseEntity<Tag> changeStatusTag(@PathVariable("id") Long idTag) {
+        Tag tag = tagService.changeStatusTag(idTag);
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 }

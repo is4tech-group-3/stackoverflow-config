@@ -16,17 +16,6 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
 
     @Override
-    public List<Tag> getTags() {
-        return tagRepository.findAll();
-    }
-
-    @Override
-    public Tag getTag(Long idTag) {
-        return tagRepository.findById(idTag)
-                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
-    }
-
-    @Override
     public Tag createTag(TagRequest tagRequest) {
         Tag tag = Tag.builder()
                 .name(tagRequest.getName())
@@ -34,6 +23,17 @@ public class TagServiceImpl implements TagService {
                 .status(true)
                 .build();
         return tagRepository.save(tag);
+    }
+
+    @Override
+    public List<Tag> getTags() {
+        return tagRepository.findAll();
+    }
+
+    @Override
+    public Tag findTagById(Long idTag) {
+        return tagRepository.findById(idTag)
+                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag changeStatus(Long idTag) {
+    public Tag changeStatusTag(Long idTag) {
         Tag tag = tagRepository.findById(idTag)
                 .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
         tag.setStatus(!tag.getStatus());

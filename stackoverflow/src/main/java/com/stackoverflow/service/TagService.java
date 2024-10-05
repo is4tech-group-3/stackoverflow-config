@@ -6,15 +6,16 @@ import com.stackoverflow.dto.TagRequest;
 import java.util.List;
 
 public interface TagService {
+    Tag createTag(TagRequest tagRequest);
+
     List<Tag> getTags();
 
-    Tag getTag(Long idTag);
+    Tag findTagById(Long idTag);
 
-    Tag createTag(TagRequest tagRequest);
 
     Tag updateTag(Long idTag, TagRequest tagRequest);
 
     void deleteTag(Long idTag);
 
-    Tag changeStatus(Long idTag);
+    Tag changeStatusTag(Long idTag);
 }
