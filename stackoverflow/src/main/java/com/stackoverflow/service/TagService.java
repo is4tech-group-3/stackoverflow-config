@@ -12,7 +12,6 @@ public interface TagService {
 
     Tag findTagById(Long idTag);
 
-
     Tag updateTag(Long idTag, TagRequest tagRequest);
 
     void deleteTag(Long idTag);
