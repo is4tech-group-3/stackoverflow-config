@@ -3,12 +3,12 @@ package com.stackoverflow.service;
 import com.stackoverflow.bo.Tag;
 import com.stackoverflow.dto.TagRequest;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface TagService {
     Tag createTag(TagRequest tagRequest);
 
-    List<Tag> getTags();
+    Page<Tag> getTags(int page, int size, String sortBy, String sortDirection);
 
     Tag findTagById(Long idTag);
 
