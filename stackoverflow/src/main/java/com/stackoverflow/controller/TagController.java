@@ -4,6 +4,9 @@ import com.stackoverflow.bo.Tag;
 import com.stackoverflow.dto.TagRequest;
 import com.stackoverflow.service.TagService;
 import lombok.AllArgsConstructor;
+
+import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +26,12 @@ public class TagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Tag>> getTags() {
-        List<Tag> tags = tagService.getTags();
-        return new ResponseEntity<>(tags, HttpStatus.OK);
+    public Page<Tag> getQuestions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+        return tagService.getTags(page, size, sortBy, sortDirection);
     }
 
     @GetMapping("/{id}")
