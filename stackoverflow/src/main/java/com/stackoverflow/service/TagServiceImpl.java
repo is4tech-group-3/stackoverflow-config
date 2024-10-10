@@ -3,6 +3,8 @@ package com.stackoverflow.service;
 import com.stackoverflow.bo.Tag;
 import com.stackoverflow.dto.TagRequest;
 import com.stackoverflow.repository.TagRepository;
+import com.stackoverflow.util.ValidationUtil;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,16 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag createTag(TagRequest tagRequest) {
+        if (tagRepository.findByName(tagRequest.getName()).isPresent()) {
+            throw new IllegalArgumentException("Tag name already exists");
+        }
+
+        ValidationUtil.validateNotEmpty(tagRequest.getName(), "Name");
+        ValidationUtil.validateNotEmpty(tagRequest.getDescription(), "Description");
+
+        ValidationUtil.validateMaxLength(tagRequest.getName(), 15, "Name");
+        ValidationUtil.validateMaxLength(tagRequest.getDescription(), 30, "Description");
+
         Tag tag = Tag.builder()
                 .name(tagRequest.getName())
                 .description(tagRequest.getDescription())
@@ -40,6 +52,17 @@ public class TagServiceImpl implements TagService {
     public Tag updateTag(Long idTag, TagRequest tagRequest) {
         Tag tag = tagRepository.findById(idTag)
                 .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
+
+        if (!tag.getName().equals(tagRequest.getName()) && tagRepository.findByName(tagRequest.getName()).isPresent()) {
+            throw new IllegalArgumentException("Tag name already exists");
+        }
+
+        ValidationUtil.validateNotEmpty(tagRequest.getName(), "Name");
+        ValidationUtil.validateNotEmpty(tagRequest.getDescription(), "Description");
+
+        ValidationUtil.validateMaxLength(tagRequest.getName(), 15, "Name");
+        ValidationUtil.validateMaxLength(tagRequest.getDescription(), 30, "Description");
+
         tag.setName(tagRequest.getName());
         tag.setDescription(tagRequest.getDescription());
         return tagRepository.save(tag);
