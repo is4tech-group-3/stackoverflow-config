@@ -8,7 +8,6 @@ import com.stackoverflow.repository.UserRepository;
 import com.stackoverflow.service.audit.AuditService;
 import com.stackoverflow.util.AuditAnnotation;
 import com.stackoverflow.util.CurrentUser;
-import com.stackoverflow.util.LoggerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
