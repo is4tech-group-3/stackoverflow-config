@@ -5,24 +5,31 @@ import com.stackoverflow.dto.TagRequest;
 import com.stackoverflow.repository.TagRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @AllArgsConstructor
 @Service
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
+    private final Validator validator;
 
     @Override
     public Tag createTag(TagRequest tagRequest) {
         if (tagRepository.findByName(tagRequest.getName()).isPresent()) {
-            throw new IllegalArgumentException("Tag name already exists");
+            throw new DataIntegrityViolationException("Tag name already exists");
         }
 
         Tag tag = Tag.builder()
@@ -53,12 +60,13 @@ public class TagServiceImpl implements TagService {
         Tag tag = tagRepository.findById(idTag)
                 .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
 
-        if (!tag.getName().equals(tagRequest.getName()) && tagRepository.findByName(tagRequest.getName()).isPresent()) {
-            throw new IllegalArgumentException("Tag name already exists");
-        }
+        if (!tag.getName().equals(tagRequest.getName()) && tagRepository.findByName(tagRequest.getName()).isPresent())
+            throw new DataIntegrityViolationException("Tag name already exists");
 
         tag.setName(tagRequest.getName());
         tag.setDescription(tagRequest.getDescription());
+        Set<ConstraintViolation<Tag>> violations = validator.validate(tag);
+        if (!violations.isEmpty()) throw new ConstraintViolationException(violations);
         return tagRepository.save(tag);
     }
 
