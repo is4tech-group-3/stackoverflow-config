@@ -1,4 +1,4 @@
-package com.stackoverflow.service;
+package com.stackoverflow.service.tag;
 
 import com.stackoverflow.bo.Tag;
 import com.stackoverflow.dto.TagRequest;
