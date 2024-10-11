@@ -1,9 +1,8 @@
-package com.stackoverflow.service;
+package com.stackoverflow.service.tag;
 
 import com.stackoverflow.bo.Tag;
 import com.stackoverflow.dto.TagRequest;
 import com.stackoverflow.repository.TagRepository;
-import com.stackoverflow.util.ValidationUtil;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -13,8 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -27,12 +24,6 @@ public class TagServiceImpl implements TagService {
         if (tagRepository.findByName(tagRequest.getName()).isPresent()) {
             throw new IllegalArgumentException("Tag name already exists");
         }
-
-        ValidationUtil.validateNotEmpty(tagRequest.getName(), "Name");
-        ValidationUtil.validateNotEmpty(tagRequest.getDescription(), "Description");
-
-        ValidationUtil.validateMaxLength(tagRequest.getName(), 15, "Name");
-        ValidationUtil.validateMaxLength(tagRequest.getDescription(), 30, "Description");
 
         Tag tag = Tag.builder()
                 .name(tagRequest.getName())
@@ -65,12 +56,6 @@ public class TagServiceImpl implements TagService {
         if (!tag.getName().equals(tagRequest.getName()) && tagRepository.findByName(tagRequest.getName()).isPresent()) {
             throw new IllegalArgumentException("Tag name already exists");
         }
-
-        ValidationUtil.validateNotEmpty(tagRequest.getName(), "Name");
-        ValidationUtil.validateNotEmpty(tagRequest.getDescription(), "Description");
-
-        ValidationUtil.validateMaxLength(tagRequest.getName(), 15, "Name");
-        ValidationUtil.validateMaxLength(tagRequest.getDescription(), 30, "Description");
 
         tag.setName(tagRequest.getName());
         tag.setDescription(tagRequest.getDescription());
