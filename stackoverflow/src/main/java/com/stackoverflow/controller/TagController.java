@@ -28,7 +28,6 @@ public class TagController {
         return new ResponseEntity<>(tag, HttpStatus.CREATED);
     }
 
-    @AuditAnnotation(ENTITY_NAME)
     @GetMapping
     public Page<Tag> getQuestions(
             @RequestParam(defaultValue = "0") int page,
@@ -38,7 +37,6 @@ public class TagController {
         return tagService.getTags(page, size, sortBy, sortDirection);
     }
 
-    @AuditAnnotation(ENTITY_NAME)
     @GetMapping("/{id}")
     public ResponseEntity<Tag> findTagById(@PathVariable("id") Long idTag) {
         Tag tag = tagService.findTagById(idTag);
