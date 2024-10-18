@@ -19,4 +19,3 @@ public class CurrentUser {
         return claims.getSubject();
     }
 }
-
