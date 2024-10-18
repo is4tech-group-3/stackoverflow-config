@@ -6,20 +6,17 @@ import com.stackoverflow.service.tag.TagService;
 import com.stackoverflow.util.AuditAnnotation;
 import lombok.AllArgsConstructor;
 
-import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/tag")
 public class TagController {
     private final TagService tagService;
-    private final String ENTITY_NAME = "TAG";
+    private static final String ENTITY_NAME = "TAG";
 
     @AuditAnnotation(ENTITY_NAME)
     @PostMapping
@@ -37,29 +34,29 @@ public class TagController {
         return tagService.getTags(page, size, sortBy, sortDirection);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Tag> findTagById(@PathVariable("id") Long idTag) {
+    @GetMapping("/{idTag}")
+    public ResponseEntity<Tag> findTagById(@PathVariable("idTag") Long idTag) {
         Tag tag = tagService.findTagById(idTag);
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 
     @AuditAnnotation(ENTITY_NAME)
-    @PutMapping("/{id}")
-    public ResponseEntity<Tag> updateTag(@PathVariable("id") Long idTag, @RequestBody TagRequest tagRequest) {
+    @PutMapping("/{idTag}")
+    public ResponseEntity<Tag> updateTag(@PathVariable("idTag") Long idTag, @RequestBody TagRequest tagRequest) {
         Tag tag = tagService.updateTag(idTag, tagRequest);
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 
     @AuditAnnotation(ENTITY_NAME)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable("id") Long idTag) {
+    @DeleteMapping("/{idTag}")
+    public ResponseEntity<String> deleteTag(@PathVariable("idTag") Long idTag) {
         tagService.deleteTag(idTag);
         return new ResponseEntity<>("Tag deleted successfully", HttpStatus.OK);
     }
 
     @AuditAnnotation(ENTITY_NAME)
-    @PatchMapping("/{id}")
-    public ResponseEntity<Tag> changeStatusTag(@PathVariable("id") Long idTag) {
+    @PatchMapping("/{idTag}")
+    public ResponseEntity<Tag> changeStatusTag(@PathVariable("idTag") Long idTag) {
         Tag tag = tagService.changeStatusTag(idTag);
         return new ResponseEntity<>(tag, HttpStatus.OK);
     }

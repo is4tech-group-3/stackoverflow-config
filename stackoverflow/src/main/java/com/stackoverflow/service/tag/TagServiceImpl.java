@@ -26,6 +26,8 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     private final Validator validator;
 
+    private static final String TAG_NOT_FOUND = "Tag not found with ID: ";
+
     @Override
     public Tag createTag(TagRequest tagRequest) {
         if (tagRepository.findByName(tagRequest.getName()).isPresent()) {
@@ -52,13 +54,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag findTagById(Long idTag) {
         return tagRepository.findById(idTag)
-                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
+                .orElseThrow(() -> new EntityNotFoundException(TAG_NOT_FOUND + idTag));
     }
 
     @Override
     public Tag updateTag(Long idTag, TagRequest tagRequest) {
         Tag tag = tagRepository.findById(idTag)
-                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
+                .orElseThrow(() -> new EntityNotFoundException(TAG_NOT_FOUND + idTag));
 
         if (!tag.getName().equals(tagRequest.getName()) && tagRepository.findByName(tagRequest.getName()).isPresent())
             throw new DataIntegrityViolationException("Tag name already exists");
@@ -72,15 +74,16 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void deleteTag(Long idTag) {
-        tagRepository.findById(idTag)
-                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
+        if(!tagRepository.existsById(idTag)){
+            throw new EntityNotFoundException(TAG_NOT_FOUND + idTag);
+        }
         tagRepository.deleteById(idTag);
     }
 
     @Override
     public Tag changeStatusTag(Long idTag) {
         Tag tag = tagRepository.findById(idTag)
-                .orElseThrow(() -> new EntityNotFoundException("Tag not found with id: " + idTag));
+                .orElseThrow(() -> new EntityNotFoundException(TAG_NOT_FOUND + idTag));
         tag.setStatus(!tag.getStatus());
         return tagRepository.save(tag);
     }

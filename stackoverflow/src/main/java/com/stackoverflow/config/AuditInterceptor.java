@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -31,8 +33,8 @@ public class AuditInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (handler instanceof HandlerMethod) {
-            Method method = ((HandlerMethod) handler).getMethod();
+        if (handler instanceof HandlerMethod handlerMethod) {
+            Method method = handlerMethod.getMethod();
             AuditAnnotation auditAnnotation = method.getAnnotation(AuditAnnotation.class);
 
             if (!(request instanceof ContentCachingRequestWrapper)) {
@@ -46,7 +48,12 @@ public class AuditInterceptor implements HandlerInterceptor {
                 audit.setHttpMethod(request.getMethod());
                 audit.setDateOperation(new Date());
                 User user = getUserIdFromRequest(request);
-                audit.setUserId(user.getId());
+                if (user != null) {
+                    audit.setUserId(user.getId());
+                    audit.setEmail(user.getEmail());
+                } else {
+                    throw new AuthenticationException("It seems that the user is not authenticated");
+                }
                 audit.setEmail(user.getEmail());
 
                 request.setAttribute("audit", audit);
@@ -91,20 +98,24 @@ public class AuditInterceptor implements HandlerInterceptor {
 
     private Object getRequestBody(ContentCachingRequestWrapper cachingRequest) {
         byte[] content = cachingRequest.getContentAsByteArray();
+        if (content.length == 0) return null;
+        String body = extractBody(content, cachingRequest);
+        return parseBodyAsObject(body);
+    }
 
-        if (content.length == 0) {
-            return null;
-        }
-
+    private String extractBody(byte[] content, ContentCachingRequestWrapper cachingRequest) {
         try {
-            String body = new String(content, cachingRequest.getCharacterEncoding());
-            try {
-                return new ObjectMapper().readValue(body, Object.class);
-            } catch (JsonProcessingException e) {
-                return body;
-            }
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Encoding not supported for request body", e);
+            return new String(content, cachingRequest.getCharacterEncoding());
+        } catch (UnsupportedEncodingException e) {
+            throw new UnsupportedOperationException("Encoding not supported for request body");
+        }
+    }
+
+    private Object parseBodyAsObject(String body) {
+        try {
+            return new ObjectMapper().readValue(body, Object.class);
+        } catch (JsonProcessingException e) {
+            return body;
         }
     }
 
